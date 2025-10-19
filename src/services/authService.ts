@@ -82,21 +82,22 @@ class AuthService {
 
   saveAuth(token: string, user: User) {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      // sessionStorage kullan - tarayıcı kapanınca silinir
+      sessionStorage.setItem('token', token);
+      sessionStorage.setItem('user', JSON.stringify(user));
     }
   }
 
   getToken(): string | null {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('token');
+      return sessionStorage.getItem('token');
     }
     return null;
   }
 
   getUser(): User | null {
     if (typeof window !== 'undefined') {
-      const user = localStorage.getItem('user');
+      const user = sessionStorage.getItem('user');
       return user ? JSON.parse(user) : null;
     }
     return null;
@@ -104,8 +105,8 @@ class AuthService {
 
   logout() {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
     }
   }
 

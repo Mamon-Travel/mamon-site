@@ -54,7 +54,7 @@ export default function DropdownTravelers() {
   return (
     <Popover className="group">
       <PopoverButton className="-m-2.5 flex items-center p-2.5 text-sm font-medium text-neutral-700 group-hover:text-neutral-950 focus:outline-hidden dark:text-neutral-300 dark:group-hover:text-neutral-100">
-        Travelers
+        Hizmetler
         <ChevronDownIcon className="ms-1 size-4 group-data-open:rotate-180" aria-hidden="true" />
       </PopoverButton>
       <PopoverPanel

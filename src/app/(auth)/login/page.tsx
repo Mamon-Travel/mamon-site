@@ -93,7 +93,8 @@ const Page = () => {
       </div>
 
       <div className="mx-auto max-w-md space-y-6">
-        <div className="grid gap-3">
+        {/* Sosyal medya login butonları - Şu an devre dışı */}
+        {/* <div className="grid gap-3">
           {socials.map((item, index) => (
             <Link
               key={index}
@@ -106,14 +107,14 @@ const Page = () => {
               </p>
             </Link>
           ))}
-        </div>
+        </div> */}
         {/* OR */}
-        <div className="relative text-center">
+        {/* <div className="relative text-center">
           <span className="relative z-10 inline-block bg-white px-4 text-sm font-medium dark:bg-neutral-900 dark:text-neutral-400">
             VEYA
           </span>
           <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 border border-neutral-100 dark:border-neutral-800"></div>
-        </div>
+        </div> */}
 
         {/* Error Message */}
         {error && (

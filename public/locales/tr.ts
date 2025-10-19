@@ -50,7 +50,7 @@ export const tr = {
       Notifications: 'Bildirimler',
     },
     DropdownTravelers: {
-      Travelers: 'Seyahatçiler',
+      Travelers: 'Hizmetler',
       Stays: 'Konaklama',
       'Real Estate': 'Emlak',
       Cars: 'Araçlar',
@@ -266,7 +266,7 @@ export const tr = {
     'Update information': 'Bilgileri güncelle',
     'Save lists': 'Listeleri kaydet',
     'Saved listings': 'Kayıtlı ilanlar',
-    'Payments & payouts': 'Ödemeler ve ödemeler',
+    'Payments & payouts': 'Ödemeler ve çekimler',
     'Payout methods': 'Ödeme yöntemleri',
     'Add payout method': 'Ödeme yöntemi ekle',
     'Update your password': 'Şifrenizi güncelleyin',
@@ -274,6 +274,9 @@ export const tr = {
     'New password': 'Yeni şifre',
     'Confirm password': 'Şifreyi onayla',
     'Update password': 'Şifreyi güncelle',
+    // Navigation
+    Account: 'Hesabım',
+    Password: 'Şifre',
   },
   login: {
     Login: 'Giriş',

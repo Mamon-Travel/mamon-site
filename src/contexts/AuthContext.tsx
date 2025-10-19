@@ -22,6 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Sayfa yüklendiğinde kullanıcıyı kontrol et
+    // sessionStorage kullanıldığı için tarayıcı kapanınca otomatik silinir
     const token = authService.getToken();
     const savedUser = authService.getUser();
 

@@ -2,7 +2,6 @@ import '@/styles/tailwind.css'
 import { Metadata } from 'next'
 import { Poppins } from 'next/font/google'
 import 'rc-slider/assets/index.css'
-import CustomizeControl from './customize-control'
 import ThemeProvider from './theme-provider'
 import { AuthProvider } from '@/contexts/AuthContext'
 
@@ -14,25 +13,20 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s - Chisfis',
-    default: 'Chisfis - Booking online React Next.js template',
+    template: '%s - Mamon Travel',
+    default: 'Mamon Travel Kiralama',
   },
-  description: 'Booking online & rental online Next.js Template',
-  keywords: ['Chisfis', 'Booking online', 'Rental online', 'React Next.js template'],
+  description: 'Mamon Travel Kiralama',
+  keywords: ['Mamon Travel', 'Kiralama', 'Travel', 'React Next.js template'],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={poppins.className}>
+    <html lang="tr" className={poppins.className}>
       <body className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
         <ThemeProvider>
           <AuthProvider>
-            <div>
-              {children}
-
-              {/* For Chisfis's demo  -- you can remove it  */}
-              <CustomizeControl />
-            </div>
+            {children}
           </AuthProvider>
         </ThemeProvider>
       </body>

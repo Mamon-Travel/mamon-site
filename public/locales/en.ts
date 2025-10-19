@@ -50,7 +50,7 @@ export const en = {
       Notifications: 'Notifications',
     },
     DropdownTravelers: {
-      Travelers: 'Travelers',
+      Travelers: 'Hizmetler',
       Stays: 'Stays',
       'Real Estate': 'Real Estate',
       Cars: 'Cars',
@@ -274,6 +274,9 @@ export const en = {
     'New password': 'New password',
     'Confirm password': 'Confirm password',
     'Update password': 'Update password',
+    // Navigation
+    Account: 'Account',
+    Password: 'Password',
   },
   login: {
     Login: 'Login',

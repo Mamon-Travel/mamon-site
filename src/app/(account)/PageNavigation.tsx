@@ -2,22 +2,27 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import T from '@/utils/getT'
 
 const navigation = [
   {
     title: 'Account',
+    titleKey: 'Account',
     href: '/account',
   },
   {
     title: 'Saved listings',
+    titleKey: 'Saved listings',
     href: '/account-savelists',
   },
   {
     title: 'Password',
+    titleKey: 'Password',
     href: '/account-password',
   },
   {
     title: 'Payments & payouts',
+    titleKey: 'Payments & payouts',
     href: '/account-billing',
   },
 ]
@@ -38,7 +43,7 @@ export const PageNavigation = () => {
                 isActive ? 'border-primary-500 font-medium' : 'border-transparent'
               }`}
             >
-              {item.title}
+              {T['accountPage'][item.titleKey as keyof typeof T.accountPage] || item.title}
             </Link>
           )
         })}

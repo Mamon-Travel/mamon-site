@@ -7,9 +7,9 @@ import { FC } from 'react'
 import AvatarDropdown from './AvatarDropdown'
 import CategoriesDropdown from './CategoriesDropdown'
 import CurrLangDropdown from './CurrLangDropdown'
+import DarkModeToggle from './DarkModeToggle'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import MegaMenuPopover from './MegaMenuPopover'
-import NotifyDropdown from './NotifyDropdown'
 interface HeaderProps {
   hasBorderBottom?: boolean
   className?: string
@@ -42,12 +42,11 @@ const Header: FC<HeaderProps> = async ({ hasBorderBottom = true, className }) =>
             <div className="block lg:hidden">
               <HamburgerBtnMenu />
             </div>
-            <MegaMenuPopover megamenu={megamenu} featuredCategory={featuredCategory} />
+            
+            {/* <MegaMenuPopover megamenu={megamenu} featuredCategory={featuredCategory} /> */}
             <CurrLangDropdown currencies={currencies} className="hidden md:block" />
-            <Button className="-mx-1 py-1.75!" color="light" href={'/add-listing/1'}>
-              List your property
-            </Button>
-            <NotifyDropdown />
+            <Button className="-mx-1 py-1.75!" color="light" href={'/add-listing/1'}>Erken Rezervasyon</Button>
+            <DarkModeToggle />
             <AvatarDropdown />
           </div>
         </div>

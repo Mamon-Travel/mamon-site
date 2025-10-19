@@ -1,5 +1,6 @@
 'use client'
 
+import { useAuth } from '@/contexts/AuthContext'
 import avatar4 from '@/images/avatars/Image-4.png'
 import avatar5 from '@/images/avatars/Image-5.png'
 import avatar6 from '@/images/avatars/Image-6.png'
@@ -39,6 +40,13 @@ interface Props {
 }
 
 const NotifyDropdown: FC<Props> = ({ className = '' }) => {
+  const { isAuthenticated, loading } = useAuth();
+
+  // Giriş yapmamışsa hiçbir şey gösterme
+  if (!isAuthenticated || loading) {
+    return null;
+  }
+
   return (
     <Popover className={className}>
       <>
