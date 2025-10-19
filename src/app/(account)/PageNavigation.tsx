@@ -2,13 +2,18 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const navigation = [
   {
     title: 'Account',
     titleKey: 'Account',
     href: '/account',
+  },
+  {
+    title: 'My Bookings',
+    titleKey: 'My Bookings',
+    href: '/account-bookings',
   },
   {
     title: 'Saved listings',
@@ -29,6 +34,7 @@ const navigation = [
 
 export const PageNavigation = () => {
   const pathname = usePathname()
+  const { T } = useLanguage()
 
   return (
     <div className="container">

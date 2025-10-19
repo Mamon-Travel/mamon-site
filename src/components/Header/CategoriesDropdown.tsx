@@ -24,7 +24,7 @@ const defaultIcon = House04Icon
 
 export default function DropdownTravelers() {
   const pathName = usePathname()
-  const { translations: T, isLoaded } = useLanguage()
+  const { T, isLoaded } = useLanguage()
   const [hizmetler, setHizmetler] = useState<Hizmet[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -51,10 +51,14 @@ export default function DropdownTravelers() {
     )
   }
 
+  // Aktif hizmeti bul
+  const activeHizmet = hizmetler.find(h => pathName === h.url || pathName?.startsWith(h.slug))
+  const buttonText = activeHizmet?.ad || T?.['Header']?.['DropdownTravelers']?.['Travelers'] || 'Hizmetler'
+
   return (
     <Popover className="group">
       <PopoverButton className="-m-2.5 flex items-center p-2.5 text-sm font-medium text-neutral-700 group-hover:text-neutral-950 focus:outline-hidden dark:text-neutral-300 dark:group-hover:text-neutral-100">
-        Hizmetler
+        {buttonText}
         <ChevronDownIcon className="ms-1 size-4 group-data-open:rotate-180" aria-hidden="true" />
       </PopoverButton>
       <PopoverPanel

@@ -11,7 +11,7 @@ import FieldPanelContainer from '../FieldPanelContainer'
 import LocationInput from '../LocationInput'
 
 const CarSearchFormMobile = () => {
-  const { translations: T, isLoaded } = useLanguage()
+  const { T, isLoaded } = useLanguage()
   //
   const [fieldNameShow, setFieldNameShow] = useState<'locationPickup' | 'locationDropoff' | 'dates'>('locationPickup')
   //

@@ -4,6 +4,9 @@ import { Poppins } from 'next/font/google'
 import 'rc-slider/assets/index.css'
 import ThemeProvider from './theme-provider'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { CartProvider } from '@/contexts/CartContext'
+import DynamicTitle from '@/components/DynamicTitle'
+import { Toaster } from 'sonner'
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -26,7 +29,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
         <ThemeProvider>
           <AuthProvider>
-            {children}
+            <CartProvider>
+              <DynamicTitle />
+              <Toaster position="top-right" richColors />
+              {children}
+            </CartProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

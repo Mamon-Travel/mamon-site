@@ -35,7 +35,7 @@ const formTabs: { name: ListingType; icon: IconSvgElement; formComponent: React.
 ]
 
 const HeroSearchFormMobile = ({ className }: { className?: string }) => {
-  const { translations: T, isLoaded } = useLanguage()
+  const { T, isLoaded } = useLanguage()
   const [showModal, setShowModal] = useState(false)
 
   // FOR RESET ALL DATA WHEN CLICK CLEAR BUTTON

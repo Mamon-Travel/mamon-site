@@ -14,7 +14,7 @@ interface Props {
 }
 
 export const RentalCarSearchForm: FC<Props> = ({ className, formStyle = 'default' }) => {
-  const { translations: T, isLoaded } = useLanguage()
+  const { T, isLoaded } = useLanguage()
   const [dropOffLocationType, setDropOffLocationType] = useState<'same' | 'different'>('different')
 
   const router = useRouter()

@@ -12,6 +12,7 @@ import SectionOurFeatures from '@/components/SectionOurFeatures'
 import SectionSliderNewCategories from '@/components/SectionSliderNewCategories'
 import SectionSubscribe2 from '@/components/SectionSubscribe2'
 import SectionVideos from '@/components/SectionVideos'
+import SectionGridProducts from '@/components/SectionGridProducts'
 import { getAuthors } from '@/data/authors'
 import { getStayCategories } from '@/data/categories'
 import { getStayListings } from '@/data/listings'
@@ -60,7 +61,14 @@ async function Page() {
         </div>
 
         <SectionOurFeatures className="py-14" />
-        <SectionGridFeaturePlaces stayListings={stayListings} cardType="card2" />
+        
+        {/* Konaklama Ürünleri */}
+        <div>
+          <HeadingWithSub subheading="En iyi konaklama seçenekleri">
+            Konaklama
+          </HeadingWithSub>
+          <SectionGridProducts hizmetId={1} />
+        </div>
         <Divider />
         <SectionHowItWork />
         <div className="relative py-20">

@@ -25,12 +25,12 @@ export const useLanguage = () => {
     window.location.reload()
   }
 
-  const translations = getTranslations(language)
+  const T = getTranslations(language)
 
   return {
     language,
     changeLanguage,
-    translations,
+    T,
     isLoaded
   }
 }

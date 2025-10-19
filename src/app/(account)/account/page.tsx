@@ -6,13 +6,14 @@ import ButtonPrimary from '@/shared/ButtonPrimary'
 import { Divider } from '@/shared/divider'
 import { Field, Label } from '@/shared/fieldset'
 import Input from '@/shared/Input'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect, useState } from 'react'
 import userService, { ProfileResponse } from '@/services/userService'
 import authService from '@/services/authService'
 
 const Page = () => {
+  const { T } = useLanguage()
   const { user, loading: authLoading } = useAuth()
   const [profile, setProfile] = useState<ProfileResponse | null>(null)
   const [loading, setLoading] = useState(true)

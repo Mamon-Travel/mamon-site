@@ -8,6 +8,7 @@ import CurrLangDropdown from './CurrLangDropdown'
 import DarkModeToggle from './DarkModeToggle'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import Navigation from './Navigation/Navigation'
+import CartButton from './CartButton'
 
 interface Props {
   hasBorder?: boolean
@@ -44,6 +45,7 @@ const Header2: FC<Props> = async ({ hasBorder = true, className }) => {
           <div className="flex flex-1 items-center justify-end gap-x-2.5 sm:gap-x-6">
             <CurrLangDropdown currencies={currencies} className="hidden md:block" />
             <DarkModeToggle />
+            <CartButton />
             <AvatarDropdown />
           </div>
         </div>

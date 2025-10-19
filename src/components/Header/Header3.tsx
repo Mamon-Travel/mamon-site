@@ -14,6 +14,7 @@ import HeroSearchFormSmall from '../HeroSearchForm/HeroSearchFormSmall'
 import AvatarDropdown from './AvatarDropdown'
 import DarkModeToggle from './DarkModeToggle'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
+import CartButton from './CartButton'
 
 interface Header3Props {
   hasBorderBottom?: boolean
@@ -158,6 +159,7 @@ const Header3: FC<Header3Props> = ({ className, hasBorderBottom = true, initSear
               </div>
 
               <DarkModeToggle />
+              <CartButton />
               <AvatarDropdown />
               <HamburgerBtnMenu />
             </div>

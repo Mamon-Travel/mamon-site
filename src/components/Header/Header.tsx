@@ -10,6 +10,7 @@ import CurrLangDropdown from './CurrLangDropdown'
 import DarkModeToggle from './DarkModeToggle'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import MegaMenuPopover from './MegaMenuPopover'
+import CartButton from './CartButton'
 interface HeaderProps {
   hasBorderBottom?: boolean
   className?: string
@@ -47,6 +48,7 @@ const Header: FC<HeaderProps> = async ({ hasBorderBottom = true, className }) =>
             <CurrLangDropdown currencies={currencies} className="hidden md:block" />
             <Button className="-mx-1 py-1.75!" color="light" href={'/add-listing/1'}>Erken Rezervasyon</Button>
             <DarkModeToggle />
+            <CartButton />
             <AvatarDropdown />
           </div>
         </div>

@@ -4,13 +4,14 @@ import ButtonPrimary from '@/shared/ButtonPrimary'
 import { Divider } from '@/shared/divider'
 import { Field, Label } from '@/shared/fieldset'
 import Input from '@/shared/Input'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import userService from '@/services/userService'
 import authService from '@/services/authService'
 
 const Page = () => {
+  const { T } = useLanguage()
   const { user } = useAuth()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')

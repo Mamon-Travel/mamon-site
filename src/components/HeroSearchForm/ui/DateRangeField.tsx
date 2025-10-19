@@ -2,13 +2,18 @@
 
 import DatePickerCustomDay from '@/components/DatePickerCustomDay'
 import DatePickerCustomHeaderTwoMonth from '@/components/DatePickerCustomHeaderTwoMonth'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { CalendarIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
-import { FC, useState } from 'react'
-import DatePicker from 'react-datepicker'
+import { FC, useState, useEffect } from 'react'
+import DatePicker, { registerLocale } from 'react-datepicker'
 import { ClearDataButton } from './ClearDataButton'
+import { tr, enUS } from 'date-fns/locale'
+
+// react-datepicker için locale kaydet
+registerLocale('tr', tr)
+registerLocale('en', enUS)
 
 const styles = {
   button: {
@@ -41,12 +46,20 @@ export const DateRangeField: FC<Props> = ({
   className = 'flex-1',
   fieldStyle = 'default',
   clearDataButtonClassName,
-  description = `${T['HeroSearchForm']['CheckIn']} - ${T['HeroSearchForm']['CheckOut']}`,
+  description,
   panelClassName,
   isOnlySingleDate = false,
 }) => {
+  const { T, language } = useLanguage()
   const [startDate, setStartDate] = useState<Date | null>(new Date('2025/09/08'))
   const [endDate, setEndDate] = useState<Date | null>(new Date('2025/09/19'))
+  
+  // Locale'yi dile göre belirle
+  const dateLocale = language === 'tr' ? 'tr' : 'en'
+  const localeString = language === 'tr' ? 'tr-TR' : 'en-US'
+  
+  // Description default değeri
+  const defaultDescription = `${T['HeroSearchForm']['CheckIn']} - ${T['HeroSearchForm']['CheckOut']}`
 
   return (
     <>
@@ -62,20 +75,20 @@ export const DateRangeField: FC<Props> = ({
 
               <div className="flex-1 text-start">
                 <span className={clsx('block font-semibold', styles.mainText[fieldStyle])}>
-                  {startDate?.toLocaleDateString('en-US', {
+                  {startDate?.toLocaleDateString(localeString, {
                     month: 'short',
                     day: '2-digit',
                   }) || T['HeroSearchForm']['Add dates']}
                   {endDate && !isOnlySingleDate
                     ? ' - ' +
-                      endDate?.toLocaleDateString('en-US', {
+                      endDate?.toLocaleDateString(localeString, {
                         month: 'short',
                         day: '2-digit',
                       })
                     : ''}
                 </span>
                 <span className="mt-1 block text-sm leading-none font-light text-neutral-400">
-                  {description || T['HeroSearchForm']['Add dates']}
+                  {description || defaultDescription}
                 </span>
               </div>
             </PopoverButton>
@@ -105,6 +118,7 @@ export const DateRangeField: FC<Props> = ({
                   monthsShown={2}
                   showPopperArrow={false}
                   inline
+                  locale={dateLocale}
                   renderCustomHeader={(p) => <DatePickerCustomHeaderTwoMonth {...p} />}
                   renderDayContents={(day, date) => <DatePickerCustomDay dayOfMonth={day} date={date} />}
                 />
@@ -122,6 +136,7 @@ export const DateRangeField: FC<Props> = ({
                   monthsShown={2}
                   showPopperArrow={false}
                   inline
+                  locale={dateLocale}
                   renderCustomHeader={(p) => <DatePickerCustomHeaderTwoMonth {...p} />}
                   renderDayContents={(day, date) => <DatePickerCustomDay dayOfMonth={day} date={date} />}
                 />

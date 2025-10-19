@@ -1,5 +1,8 @@
+'use client'
+
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import { ReactDatePickerCustomHeaderProps } from 'react-datepicker'
+import { useLanguage } from '@/hooks/useLanguage'
 
 const DatePickerCustomHeaderTwoMonth = ({
   monthDate,
@@ -7,6 +10,9 @@ const DatePickerCustomHeaderTwoMonth = ({
   decreaseMonth,
   increaseMonth,
 }: ReactDatePickerCustomHeaderProps) => {
+  const { language } = useLanguage()
+  const localeString = language === 'tr' ? 'tr-TR' : 'en-US'
+
   return (
     <div>
       <button
@@ -23,7 +29,7 @@ const DatePickerCustomHeaderTwoMonth = ({
         </span>
       </button>
       <span className="react-datepicker__current-month">
-        {monthDate.toLocaleString('en-US', {
+        {monthDate.toLocaleString(localeString, {
           month: 'long',
           year: 'numeric',
         })}
