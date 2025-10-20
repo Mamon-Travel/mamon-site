@@ -211,3 +211,4 @@ const AccountBookingsPage = () => {
 
 export default AccountBookingsPage;
 
+

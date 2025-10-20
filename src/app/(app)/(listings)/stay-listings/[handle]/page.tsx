@@ -16,6 +16,7 @@ import {
 } from '@/components/Icons'
 import { getListingReviews } from '@/data/data'
 import { getStayListingByHandle } from '@/data/listings'
+import { getOtelBySlug, getOdaTipleri } from '@/services/otelService'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import ButtonSecondary from '@/shared/ButtonSecondary'
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/shared/description-list'
@@ -56,7 +57,53 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
 const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
   const { handle } = await params
 
-  const listing = await getStayListingByHandle(handle)
+  // Önce gerçek otel verisini dene
+  const otel = await getOtelBySlug(handle)
+  
+  let listing
+  
+  if (otel) {
+    // Oda tiplerini getir
+    const odaTipleri = await getOdaTipleri(otel.id)
+    
+    // Otel verisini listing formatına dönüştür
+    listing = {
+      id: `stay-listing://${otel.id}`,
+      date: new Date(otel.olusturma_tarihi).toLocaleDateString('tr-TR'),
+      listingCategory: otel.konsept || 'Otel',
+      title: otel.ad,
+      handle: otel.slug,
+      description: otel.detay?.uzun_aciklama || otel.detay?.kisa_aciklama || '',
+      featuredImage: otel.kapak_gorseli || 'https://images.pexels.com/photos/6129967/pexels-photo-6129967.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260',
+      galleryImgs: otel.gorseller && otel.gorseller.length > 0 
+        ? otel.gorseller.map((g: any) => g.gorsel_url)
+        : [otel.kapak_gorseli || ''],
+      like: false,
+      address: otel.adres || `${otel.sehir}${otel.bolge ? ', ' + otel.bolge : ''}`,
+      reviewStart: 4.5,
+      reviewCount: 0,
+      price: otel.min_fiyat ? `₺${otel.min_fiyat}` : '₺0',
+      maxGuests: odaTipleri.reduce((max, oda) => Math.max(max, oda.kapasite || 0), 0) || 2,
+      bedrooms: otel.detay?.oda_sayisi || odaTipleri.length || 0,
+      bathrooms: 1,
+      beds: odaTipleri.length || 1,
+      saleOff: undefined,
+      isAds: false,
+      map: otel.enlem && otel.boylam ? { lat: otel.enlem, lng: otel.boylam } : undefined,
+      host: {
+        name: otel.ad,
+        avatar: otel.kapak_gorseli || '',
+        email: otel.email || '',
+        href: `/stay-listings/${otel.slug}`,
+      },
+      odaTipleri, // Gerçek oda tipleri
+      otelOzellikleri: otel.otelOzellikleri || [], // Otel özellikleri
+      otelDetay: otel.detay, // Detaylı bilgiler
+    }
+  } else {
+    // Fallback: Fake data kullan
+    listing = await getStayListingByHandle(handle)
+  }
 
   if (!listing?.id) {
     return redirect('/stay-categories/all')
@@ -126,107 +173,127 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
   }
 
   const renderSectionInfo = () => {
-    const roomRates = [
-      {
-        name: 'monday-thursday',
-        title: 'Monday - Thursday',
-        price: '$199',
-      },
-      {
-        name: 'friday-sunday',
-        title: 'Friday - Sunday',
-        price: '$219',
-      },
-      {
-        name: 'rent-by-month',
-        title: 'Rent by month',
-        price: '-8.34 %',
-      },
-      {
-        name: 'minimum-nights',
-        title: 'Minimum number of nights',
-        price: '1 night',
-      },
-      {
-        name: 'maximum-nights',
-        title: 'Max number of nights',
-        price: '90 nights',
-      },
-    ]
+    // @ts-ignore - odaTipleri gerçek otel verisinden geliyor
+    const odaTipleri = listing.odaTipleri || []
+    // @ts-ignore - otelDetay gerçek otel verisinden geliyor
+    const otelDetay = listing.otelDetay
+
     return (
       <div className="listingSection__wrap">
-        <SectionHeading>Stay information</SectionHeading>
+        <SectionHeading>Otel Bilgileri</SectionHeading>
         <div className="leading-relaxed text-neutral-700 dark:text-neutral-300">
-          <span>
-            Providing lake views, The Symphony 9 Tam Coc in Ninh Binh provides accommodation, an outdoor swimming pool,
-            a bar, a shared lounge, a garden and barbecue facilities. Complimentary WiFi is provided.
-          </span>
-          <br />
-          <br />
-          <span>There is a private bathroom with bidet in all units, along with a hairdryer and free toiletries.</span>
-          <br /> <br />
-          <span>
-            The Symphony 9 Tam Coc offers a terrace. Both a bicycle rental service and a car rental service are
-            available at the accommodation, while cycling can be enjoyed nearby.
-          </span>
+          <span>{description || 'Otel hakkında detaylı bilgi yakında eklenecek.'}</span>
         </div>
 
-        <Divider className="w-14!" />
+        {otelDetay && (
+          <>
+            <Divider className="w-14!" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              {otelDetay.denize_mesafe && (
+                <div>
+                  <span className="font-semibold">Denize Mesafe: </span>
+                  <span>{otelDetay.denize_mesafe}</span>
+                </div>
+              )}
+              {otelDetay.havalimani_mesafe && (
+                <div>
+                  <span className="font-semibold">Havalimanına Mesafe: </span>
+                  <span>{otelDetay.havalimani_mesafe}</span>
+                </div>
+              )}
+              {otelDetay.sehir_merkezi_mesafe && (
+                <div>
+                  <span className="font-semibold">Şehir Merkezine Mesafe: </span>
+                  <span>{otelDetay.sehir_merkezi_mesafe}</span>
+                </div>
+              )}
+              {otelDetay.acilis_yili && (
+                <div>
+                  <span className="font-semibold">Açılış Yılı: </span>
+                  <span>{otelDetay.acilis_yili}</span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
-        <div>
-          <SectionHeading>Room Rates </SectionHeading>
-          <SectionSubheading>Prices may increase on weekends or holidays</SectionSubheading>
-        </div>
-        <DescriptionList>
-          {roomRates.map((item) => (
-            <Fragment key={item.name}>
-              <DescriptionTerm>{item.title}</DescriptionTerm>
-              <DescriptionDetails>{item.price}</DescriptionDetails>
-            </Fragment>
-          ))}
-        </DescriptionList>
+        {odaTipleri.length > 0 && (
+          <>
+            <Divider className="w-14!" />
+            <div>
+              <SectionHeading>Oda Tipleri ve Fiyatları</SectionHeading>
+              <SectionSubheading>Mevcut oda tipleri ve gecelik fiyatları</SectionSubheading>
+            </div>
+            <DescriptionList>
+              {odaTipleri.map((oda: any) => (
+                <Fragment key={oda.id}>
+                  <DescriptionTerm>
+                    {oda.ad}
+                    <span className="block text-xs text-gray-500 font-normal mt-1">
+                      {oda.yetiskin_kapasite} Yetişkin
+                      {oda.cocuk_kapasite > 0 && `, ${oda.cocuk_kapasite} Çocuk`}
+                      {oda.metrekare && ` • ${oda.metrekare}m²`}
+                    </span>
+                  </DescriptionTerm>
+                  <DescriptionDetails>
+                    {oda.fiyat ? `₺${oda.fiyat} / Gece` : 'Fiyat Yok'}
+                  </DescriptionDetails>
+                </Fragment>
+              ))}
+            </DescriptionList>
+          </>
+        )}
       </div>
     )
   }
 
   const renderSectionAmenities = () => {
-    const Amenities_demos = [
-      { name: 'Fast wifi', icon: Wifi01Icon },
-      { name: 'Bathtub', icon: Bathtub02Icon },
-      { name: 'Hair dryer', icon: HairDryerIcon },
-      { name: 'Sound system', icon: Speaker01Icon },
-      { name: 'Shampoo', icon: ShampooIcon },
-      { name: 'Body soap', icon: BodySoapIcon },
-      { name: 'Water Energy ', icon: WaterEnergyIcon },
-      { name: 'Water Polo', icon: WaterPoloIcon },
-      { name: 'Cable Car', icon: CableCarIcon },
-      { name: 'Tv Smart', icon: TvSmartIcon },
-      { name: 'Cctv Camera', icon: CctvCameraIcon },
-      { name: 'Virtual Reality Vr', icon: VirtualRealityVr01Icon },
-    ]
+    // @ts-ignore - otelOzellikleri gerçek otel verisinden geliyor
+    const otelOzellikleri = listing.otelOzellikleri || []
+
+    // Fallback icon map
+    const iconMap: Record<string, any> = {
+      'wifi': Wifi01Icon,
+      'havuz': WaterPoloIcon,
+      'spa': BodySoapIcon,
+      'tv': TvSmartIcon,
+      'default': Wifi01Icon,
+    }
 
     return (
       <div className="listingSection__wrap">
         <div>
-          <SectionHeading>Amenities</SectionHeading>
-          <SectionSubheading>About the property&apos;s amenities and services</SectionSubheading>
+          <SectionHeading>Otel Özellikleri</SectionHeading>
+          <SectionSubheading>Otel tesislerinde bulunan olanaklar</SectionSubheading>
         </div>
         <Divider className="w-14!" />
 
-        <div className="grid grid-cols-1 gap-6 text-sm text-neutral-700 xl:grid-cols-3 dark:text-neutral-300">
-          {Amenities_demos.filter((_, i) => i < 12).map((item) => (
-            <div key={item.name} className="flex items-center gap-x-3">
-              <item.icon className="h-6 w-6" />
-              <span>{item.name}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* ----- */}
-        <div className="w-14 border-b border-neutral-200"></div>
-        <div>
-          <ButtonSecondary>View more 20 amenities</ButtonSecondary>
-        </div>
+        {otelOzellikleri.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 text-sm text-neutral-700 xl:grid-cols-3 dark:text-neutral-300">
+            {otelOzellikleri.map((ozellik: any) => {
+              const IconComponent = iconMap[ozellik.baslik?.toLowerCase()] || iconMap['default']
+              return (
+                <div key={ozellik.id} className="flex items-center gap-x-3">
+                  {ozellik.ikon ? (
+                    <span className="text-2xl">{ozellik.ikon}</span>
+                  ) : (
+                    <IconComponent className="h-6 w-6" />
+                  )}
+                  <div>
+                    <span className="font-medium">{ozellik.baslik}</span>
+                    {ozellik.aciklama && (
+                      <span className="block text-xs text-gray-500">{ozellik.aciklama}</span>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <span>Otel özellikleri bilgisi henüz eklenmemiş</span>
+          </div>
+        )}
       </div>
     )
   }

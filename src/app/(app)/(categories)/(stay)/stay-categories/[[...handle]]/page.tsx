@@ -3,7 +3,7 @@ import { StaySearchForm } from '@/components/HeroSearchForm/StaySearchForm'
 import ListingFilterTabs from '@/components/ListingFilterTabs'
 import StayCard2 from '@/components/StayCard2'
 import { getStayCategoryByHandle } from '@/data/categories'
-import { getStayListingFilterOptions, getStayListings } from '@/data/listings'
+import { getStayListingFilterOptions } from '@/data/listings'
 import { Button } from '@/shared/Button'
 import { Divider } from '@/shared/divider'
 import Pagination from '@/shared/Pagination'
@@ -12,6 +12,7 @@ import { House04Icon, MapPinpoint02Icon, MapsLocation01Icon } from '@hugeicons/c
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { getAktifOteller } from '@/services/otelService'
 
 export async function generateMetadata({ params }: { params: Promise<{ handle?: string[] }> }): Promise<Metadata> {
   const { handle } = await params
@@ -30,12 +31,43 @@ const Page = async ({ params }: { params: Promise<{ handle?: string[] }> }) => {
   const { handle } = await params
 
   const category = await getStayCategoryByHandle(handle?.[0])
-  const listings = await getStayListings()
+  const oteller = await getAktifOteller()
   const filterOptions = await getStayListingFilterOptions()
 
   if (!category?.id) {
     return redirect('/stay-categories/all')
   }
+
+  // Otelleri StayCard2 formatına dönüştür
+  const listings = oteller.map((otel) => ({
+    id: `stay-listing://${otel.id}`,
+    date: new Date(otel.olusturma_tarihi).toLocaleDateString('tr-TR'),
+    listingCategory: otel.konsept || 'Otel',
+    title: otel.ad,
+    handle: otel.slug,
+    description: otel.detay?.kisa_aciklama || '',
+    featuredImage: otel.kapak_gorseli || 'https://images.pexels.com/photos/6129967/pexels-photo-6129967.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260',
+    galleryImgs: otel.gorseller && otel.gorseller.length > 0 
+      ? otel.gorseller.map((g: any) => g.gorsel_url)
+      : [otel.kapak_gorseli || ''],
+    like: false,
+    address: otel.adres || `${otel.sehir}${otel.bolge ? ', ' + otel.bolge : ''}`,
+    reviewStart: 4.5,
+    reviewCount: 0,
+    price: otel.min_fiyat ? `₺${otel.min_fiyat}` : '₺0',
+    maxGuests: otel.odaTipleri?.reduce((max: number, oda: any) => Math.max(max, oda.kapasite || 0), 0) || 2,
+    bedrooms: otel.detay?.oda_sayisi || 0,
+    bathrooms: 1,
+    beds: otel.odaTipleri?.length || 0,
+    saleOff: undefined,
+    isAds: false,
+    map: otel.enlem && otel.boylam ? { lat: otel.enlem, lng: otel.boylam } : undefined,
+    host: {
+      name: otel.ad,
+      avatar: otel.kapak_gorseli || '',
+      email: otel.email || '',
+    },
+  }));
 
   return (
     <div className="pb-28">
@@ -63,8 +95,8 @@ const Page = async ({ params }: { params: Promise<{ handle?: string[] }> }) => {
         {/* start heading */}
         <div className="flex flex-wrap items-end justify-between gap-x-2.5 gap-y-5">
           <h2 id="heading" className="scroll-mt-20 text-lg font-semibold sm:text-xl">
-            Over {convertNumbThousand(category.count)} places
-            {category.handle !== 'all' ? ` in ${category.name}` : null}
+            {oteller.length} otel bulundu
+            {category.handle !== 'all' ? ` - ${category.name}` : null}
           </h2>
           <Button color="white" className="ms-auto" href={'/stay-categories-map/' + category.handle}>
             <span className="me-1">Show map</span>
