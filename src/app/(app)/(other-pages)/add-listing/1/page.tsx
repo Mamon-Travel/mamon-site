@@ -2,13 +2,14 @@
 
 import Input from '@/shared/Input'
 import Select from '@/shared/Select'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import Form from 'next/form'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import FormItem from '../FormItem'
 
 const Page = () => {
+  const { T } = useLanguage()
   const router = useRouter()
 
   // Prefetch the next step to improve performance
@@ -27,40 +28,40 @@ const Page = () => {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">{T['addListings']['page1']['pageTitle']}</h1>
+      <h1 className="text-2xl font-semibold">{T.addlisting?.page_title_1 || 'Mülk tipi seçin'}</h1>
       <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
       {/* FORM */}
       <Form id="add-listing-form" action={handleSubmitForm} className="flex flex-col gap-y-8">
         {/* ITEM */}
         <FormItem
-          label={T['addListings']['page1']['Choose a property type']}
-          desccription={T['addListings']['page1']['propertyTypeDescription']}
+          label={T.addlisting?.property_type || 'Mülk tipi seçin'}
+          desccription={T.addlisting?.property_type_desc || 'Listelemek istediğiniz mülk tipini seçin'}
         >
           <Select name="propertyType">
-            <option value="Apartment">Apartment</option>
-            <option value="Hotel">Hotel</option>
-            <option value="Cottage">Cottage</option>
-            <option value="Villa">Villa</option>
-            <option value="Cabin">Cabin</option>
-            <option value="Farm stay">Farm stay</option>
-            <option value="Houseboat">Houseboat</option>
-            <option value="Lighthouse">Lighthouse</option>
+            <option value="Apartment">{T.addlisting?.apartment || 'Daire'}</option>
+            <option value="Hotel">{T.addlisting?.hotel || 'Otel'}</option>
+            <option value="Cottage">{T.addlisting?.cottage || 'Kulübe'}</option>
+            <option value="Villa">{T.addlisting?.villa || 'Villa'}</option>
+            <option value="Cabin">{T.addlisting?.cabin || 'Kabin'}</option>
+            <option value="Farm stay">{T.addlisting?.farm_stay || 'Çiftlik Evi'}</option>
+            <option value="Houseboat">{T.addlisting?.houseboat || 'Tekne Evi'}</option>
+            <option value="Lighthouse">{T.addlisting?.lighthouse || 'Deniz Feneri'}</option>
           </Select>
         </FormItem>
         <FormItem
-          label={T['addListings']['page1']['Place name']}
-          desccription={T['addListings']['page1']['placeNameDescription']}
+          label={T.addlisting?.place_name || 'Mülk adı'}
+          desccription={T.addlisting?.place_name_desc || 'Mülkünüze bir ad verin'}
         >
-          <Input placeholder={T['addListings']['page1']['Place name']} name="place-name" />
+          <Input placeholder={T.addlisting?.place_name || 'Mülk adı'} name="place-name" />
         </FormItem>
         <FormItem
-          label={T['addListings']['page1']['Rental form']}
-          desccription={T['addListings']['page1']['rentalFormDescription']}
+          label={T.addlisting?.rental_form || 'Kiralama şekli'}
+          desccription={T.addlisting?.rental_form_desc || 'Mülkün kiralama şeklini seçin'}
         >
           <Select name="rentalForm">
-            <option value="Hotel">Entire place</option>
-            <option value="Private room">Private room</option>
-            <option value="Share room">Share room</option>
+            <option value="Hotel">{T.addlisting?.entire_place || 'Tüm Yer'}</option>
+            <option value="Private room">{T.addlisting?.private_room || 'Özel Oda'}</option>
+            <option value="Share room">{T.addlisting?.shared_room || 'Paylaşımlı Oda'}</option>
           </Select>
         </FormItem>
       </Form>

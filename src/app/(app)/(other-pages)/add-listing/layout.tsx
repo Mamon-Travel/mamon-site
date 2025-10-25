@@ -4,6 +4,7 @@ import ButtonPrimary from '@/shared/ButtonPrimary'
 import ButtonSecondary from '@/shared/ButtonSecondary'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { usePathname } from 'next/navigation'
+import { useLanguage } from '@/hooks/useLanguage'
 import React from 'react'
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -38,6 +39,7 @@ const PageHeading = () => {
 }
 
 const Pagination = () => {
+  const { T } = useLanguage()
   const pathname = usePathname() as string
 
   // get the number from the end of pathname
@@ -46,8 +48,12 @@ const Pagination = () => {
   let nextHref = index < 10 ? undefined : '/stay-listings/preview-stay-84763232'
   let backtHref = index > 1 ? `/add-listing/${index - 1}` : `/add-listing/${1}`
 
-  let nextBtnText = index > 9 ? 'Publish listing' : 'Next step ' + (index + 1)
-  let backBtnText = index > 1 ? 'Go back' : 'Back to home'
+  let nextBtnText = index > 9 
+    ? (T.addlisting?.publish_listing || 'İlanı Yayınla')
+    : `${T.addlisting?.next_step || 'Sonraki adım'} ${index + 1}`
+  let backBtnText = index > 1 
+    ? (T.addlisting?.go_back || 'Geri dön')
+    : (T.addlisting?.back_to_home || 'Ana sayfaya dön')
 
   return (
     <div className="mt-10 flex flex-wrap justify-end gap-3">

@@ -3,13 +3,14 @@
 import { Divider } from '@/shared/divider'
 import Input from '@/shared/Input'
 import Select from '@/shared/Select'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import Form from 'next/form'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import FormItem from '../FormItem'
 
 const Page = () => {
+  const { T } = useLanguage()
   const router = useRouter()
 
   // Prefetch the next step to improve performance
@@ -29,9 +30,9 @@ const Page = () => {
   return (
     <>
       <div>
-        <h2 className="text-2xl font-semibold">{T['addListings']['page8']['pageTitle']}</h2>
+        <h2 className="text-2xl font-semibold">{T.addlisting?.page_title_8 || 'Fiyatlandırma'}</h2>
         <span className="mt-2 block text-neutral-500 dark:text-neutral-400">
-          {T['addListings']['page8']['pageDescription']}
+          {T.addlisting?.page_desc_8 || 'Fiyatınızı belirleyin'}
         </span>
       </div>
 
@@ -39,14 +40,14 @@ const Page = () => {
       {/* FORM */}
       <Form id="add-listing-form" action={handleSubmitForm} className="space-y-8">
         {/* ITEM */}
-        <FormItem label={T['addListings']['page8']['Currency']}>
+        <FormItem label={T.addlisting?.currency || 'Para Birimi'}>
           <Select name="currency">
             <option value="USD">USD</option>
             <option value="VND">VND</option>
             <option value="EURRO">EURRO</option>
           </Select>
         </FormItem>
-        <FormItem label={T['addListings']['page8']['Base price (Monday -Thuday)']}>
+        <FormItem label={T.addlisting?.base_price_weekday || 'Hafta içi fiyat (Pazartesi-Perşembe)'}>
           <div className="relative">
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
               <span className="text-gray-500">$</span>
@@ -58,7 +59,7 @@ const Page = () => {
           </div>
         </FormItem>
         {/* ----- */}
-        <FormItem label={T['addListings']['page8']['Base price (Friday-Sunday)']}>
+        <FormItem label={T.addlisting?.base_price_weekend || 'Hafta sonu fiyat (Cuma-Pazar)'}>
           <div className="relative">
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
               <span className="text-gray-500">$</span>
@@ -70,14 +71,14 @@ const Page = () => {
           </div>
         </FormItem>
         {/* ----- */}
-        <FormItem label={T['addListings']['page8']['Long term price (Monthly discount)']}>
+        <FormItem label={T.addlisting?.monthly_discount || 'Aylık indirim'}>
           <div className="relative">
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
               <span className="text-gray-500">%</span>
             </div>
             <Input name="long-price3" className="ps-8! pe-10!" placeholder="0.00" />
             <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center pe-3">
-              <span className="text-gray-500">every month</span>
+              <span className="text-gray-500">{T.addlisting?.every_month || 'her ay'}</span>
             </div>
           </div>
         </FormItem>

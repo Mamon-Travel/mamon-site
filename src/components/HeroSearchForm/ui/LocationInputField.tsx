@@ -2,7 +2,7 @@
 
 import { useInteractOutside } from '@/hooks/useInteractOutside'
 import { Divider } from '@/shared/divider'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import * as Headless from '@headlessui/react'
 import { MapPinIcon } from '@heroicons/react/24/outline'
 import {
@@ -106,14 +106,18 @@ interface Props {
 }
 
 export const LocationInputField: FC<Props> = ({
-  placeholder = T['HeroSearchForm']['Location'],
-  description = T['HeroSearchForm']['Where are you going?'],
+  placeholder: customPlaceholder,
+  description: customDescription,
   className = 'flex-1',
   inputName = 'location',
   initSuggests = demoInitSuggests,
   searchingSuggests = demoSearchingSuggests,
   fieldStyle = 'default',
 }) => {
+  const { T } = useLanguage()
+  const placeholder = customPlaceholder || T.herosearch?.location || 'Konum'
+  const description = customDescription || T.herosearch?.where_going || 'Nereye gidiyorsunuz?'
+  
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [showPopover, setShowPopover] = useState(false)
@@ -219,7 +223,7 @@ export const LocationInputField: FC<Props> = ({
           <div className={clsx(styles.panel.base, styles.panel[fieldStyle])}>
             {isShowInitSuggests && (
               <p className="mt-2 mb-3 px-4 text-xs/6 font-normal text-neutral-600 sm:mt-0 sm:px-8 dark:text-neutral-400">
-                {T['HeroSearchForm']['Suggested locations']}
+                {T.herosearch?.suggested_locations || 'Önerilen konumlar'}
               </p>
             )}
             {isShowInitSuggests && <Divider className="opacity-50" />}

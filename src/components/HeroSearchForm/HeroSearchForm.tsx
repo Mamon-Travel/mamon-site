@@ -1,3 +1,5 @@
+'use client'
+
 import { Link } from '@/shared/link'
 import { ListingType } from '@/type'
 import * as Headless from '@headlessui/react'
@@ -16,6 +18,7 @@ import { FlightSearchForm } from './FlightSearchForm'
 import { RealEstateHeroSearchForm } from './RealEstateHeroSearchForm'
 import { RentalCarSearchForm } from './RentalCarSearchForm'
 import { StaySearchForm } from './StaySearchForm'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export const formTabs: {
   name: ListingType
@@ -31,6 +34,18 @@ export const formTabs: {
 ]
 
 const HeroSearchForm = ({ className, initTab = 'Stays' }: { className?: string; initTab: ListingType }) => {
+  const { T } = useLanguage()
+  
+  const getTabLabel = (tabName: ListingType): string => {
+    const labels: Record<ListingType, string> = {
+      'Stays': T.tabs?.stays || 'Konaklama',
+      'Cars': T.tabs?.cars || 'Araçlar',
+      'Experiences': T.tabs?.experiences || 'Deneyimler',
+      'RealEstates': T.tabs?.real_estates || 'Emlak',
+      'Flights': T.tabs?.flights || 'Uçuşlar',
+    }
+    return labels[tabName]
+  }
   return (
     <div className={clsx('hero-search-form', className)}>
       <Headless.TabGroup defaultIndex={formTabs.findIndex((tab) => tab.name === initTab)}>
@@ -44,7 +59,7 @@ const HeroSearchForm = ({ className, initTab = 'Stays' }: { className?: string; 
                 className="group/tab flex shrink-0 cursor-pointer items-center text-sm font-medium text-neutral-500 hover:text-neutral-700 focus-visible:outline-hidden data-selected:text-neutral-950 lg:text-base dark:hover:text-neutral-400 dark:data-selected:text-neutral-100"
               >
                 <div className="me-1.5 hidden size-2.5 rounded-full bg-neutral-950 group-data-selected/tab:block xl:me-2 dark:bg-neutral-100" />
-                <span>{tab.name}</span>
+                <span>{getTabLabel(tab.name)}</span>
               </Headless.Tab>
             )
           })}

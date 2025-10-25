@@ -1,65 +1,85 @@
-import HIW1img from '@/images/HIW1.png'
-import HIW2img from '@/images/HIW2.png'
-import HIW3img from '@/images/HIW3.png'
+'use client'
+
 import VectorImg from '@/images/VectorHIW.svg'
 import Heading from '@/shared/Heading'
-import Image, { StaticImageData } from 'next/image'
-import { FC } from 'react'
+import Image from 'next/image'
+import { FC, useEffect, useState } from 'react'
+import howItWorksService, { HowItWorksStep } from '@/services/howItWorksService'
+import { useLanguage } from '@/hooks/useLanguage'
 
 export interface SectionHowItWorkProps {
   className?: string
-  data?: {
-    id: number
-    title: string
-    desc: string
-    img: StaticImageData
-    imgDark?: StaticImageData
-  }[]
   title?: string
 }
 
-const DEMO_DATA: SectionHowItWorkProps['data'] = [
-  {
-    id: 1,
-    img: HIW1img,
-    title: 'Book & relax',
-    desc: 'Let each trip be an inspirational journey, each room a peaceful space',
-  },
-  {
-    id: 2,
-    img: HIW2img,
-    title: 'Smart checklist',
-    desc: 'Let each trip be an inspirational journey, each room a peaceful space',
-  },
-  {
-    id: 3,
-    img: HIW3img,
-    title: 'Save more',
-    desc: 'Let each trip be an inspirational journey, each room a peaceful space',
-  },
-]
+const SectionHowItWork: FC<SectionHowItWorkProps> = ({ className = '', title }) => {
+  const { T } = useLanguage()
+  const [steps, setSteps] = useState<HowItWorksStep[]>([])
+  const [loading, setLoading] = useState(true)
 
-const SectionHowItWork: FC<SectionHowItWorkProps> = ({ className = '', data = DEMO_DATA, title = 'How it work' }) => {
+  useEffect(() => {
+    async function loadSteps() {
+      try {
+        const data = await howItWorksService.getAnasayfaAdimlar()
+        setSteps(data)
+      } catch (error) {
+        console.error('Nasıl çalışır adımları yüklenemedi:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadSteps()
+  }, [])
+
+  const finalTitle = title || T.homepage?.how_it_works || 'How it work'
+
+  if (loading) {
+    return (
+      <div className={`nc-SectionHowItWork ${className} py-16`}>
+        <div className="text-center text-gray-500">Yükleniyor...</div>
+      </div>
+    )
+  }
   return (
     <div className={`nc-SectionHowItWork ${className}`} data-nc-id="SectionHowItWork">
-      <Heading isCenter subheading="Keep calm & travel on">
-        {title}
+      <Heading isCenter subheading={T.homepage?.how_it_works_sub || 'Keep calm & travel on'}>
+        {finalTitle}
       </Heading>
       <div className="relative mt-20 grid gap-20 md:grid-cols-3">
         <Image className="absolute inset-x-0 top-10 hidden md:block" src={VectorImg} alt="vector" />
-        {data.map((item) => (
-          <div key={item.id} className="relative mx-auto flex max-w-xs flex-col items-center">
-            {item.imgDark ? (
+        {steps.map((step) => (
+          <div key={step.id} className="relative mx-auto flex max-w-xs flex-col items-center">
+            {step.gorsel_url_dark ? (
               <>
-                <Image className="mx-auto mb-8 block max-w-[180px] dark:hidden" src={item.img} alt="how it work" />
-                <Image alt="how it work" className="mx-auto mb-8 hidden max-w-[180px] dark:block" src={item.imgDark} />
+                <img 
+                  className="mx-auto mb-8 block max-w-[180px] dark:hidden" 
+                  src={step.gorsel_url} 
+                  alt={step.baslik}
+                  width={180}
+                  height={180}
+                />
+                <img 
+                  className="mx-auto mb-8 hidden max-w-[180px] dark:block" 
+                  src={step.gorsel_url_dark} 
+                  alt={step.baslik}
+                  width={180}
+                  height={180}
+                />
               </>
             ) : (
-              <Image alt="" className="mx-auto mb-8 max-w-[180px]" src={item.img} />
+              <img 
+                className="mx-auto mb-8 max-w-[180px]" 
+                src={step.gorsel_url} 
+                alt={step.baslik}
+                width={180}
+                height={180}
+              />
             )}
             <div className="mt-auto text-center">
-              <h3 className="text-xl font-semibold">{item.title}</h3>
-              <span className="mt-5 block text-neutral-500 dark:text-neutral-400">{item.desc}</span>
+              <h3 className="text-xl font-semibold">{step.baslik}</h3>
+              <span className="mt-5 block text-neutral-500 dark:text-neutral-400">
+                {step.aciklama}
+              </span>
             </div>
           </div>
         ))}

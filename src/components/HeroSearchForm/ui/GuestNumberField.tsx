@@ -2,7 +2,7 @@
 
 import NcInputNumber from '@/components/NcInputNumber'
 import { GuestsObject } from '@/type'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { UserPlusIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
@@ -38,6 +38,7 @@ export const GuestNumberField: FC<Props> = ({
   className = 'flex-1',
   clearDataButtonClassName,
 }) => {
+  const { T } = useLanguage()
   const [guestAdultsInputValue, setGuestAdultsInputValue] = useState(2)
   const [guestChildrenInputValue, setGuestChildrenInputValue] = useState(1)
   const [guestInfantsInputValue, setGuestInfantsInputValue] = useState(1)
@@ -76,10 +77,10 @@ export const GuestNumberField: FC<Props> = ({
 
             <div className="grow">
               <span className={clsx('block font-semibold', styles.mainText[fieldStyle])}>
-                {totalGuests || ''} {T['HeroSearchForm']['Guests']}
+                {totalGuests || ''} {T.herosearch?.guests || 'Misafirler'}
               </span>
               <span className="mt-1 block text-sm leading-none font-light text-neutral-400">
-                {totalGuests ? T['HeroSearchForm']['Guests'] : T['HeroSearchForm']['Add guests']}
+                {totalGuests ? T.herosearch?.guests : T.herosearch?.add_guests || 'Misafir ekle'}
               </span>
             </div>
           </PopoverButton>
@@ -100,8 +101,8 @@ export const GuestNumberField: FC<Props> = ({
               onChange={(value) => handleChangeData(value, 'guestAdults')}
               max={10}
               min={1}
-              label={T['HeroSearchForm']['Adults']}
-              description={T['HeroSearchForm']['Ages 13 or above']}
+              label={T.herosearch?.adults || 'Yetişkinler'}
+              description={T.herosearch?.ages_13_above || '13 yaş ve üzeri'}
               inputName="guestAdults"
             />
             <NcInputNumber
@@ -109,8 +110,8 @@ export const GuestNumberField: FC<Props> = ({
               defaultValue={guestChildrenInputValue}
               onChange={(value) => handleChangeData(value, 'guestChildren')}
               max={4}
-              label={T['HeroSearchForm']['Children']}
-              description={T['HeroSearchForm']['Ages 2–12']}
+              label={T.herosearch?.children || 'Çocuklar'}
+              description={T.herosearch?.ages_2_12 || '2-12 yaş'}
               inputName="guestChildren"
             />
             <NcInputNumber
@@ -118,8 +119,8 @@ export const GuestNumberField: FC<Props> = ({
               defaultValue={guestInfantsInputValue}
               onChange={(value) => handleChangeData(value, 'guestInfants')}
               max={4}
-              label={T['HeroSearchForm']['Infants']}
-              description={T['HeroSearchForm']['Ages 0–2']}
+              label={T.herosearch?.infants || 'Bebekler'}
+              description={T.herosearch?.ages_0_2 || '0-2 yaş'}
               inputName="guestInfants"
             />
           </PopoverPanel>

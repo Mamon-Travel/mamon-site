@@ -4,7 +4,7 @@ import ButtonSecondary from '@/shared/ButtonSecondary'
 import { Divider } from '@/shared/divider'
 import Input from '@/shared/Input'
 import Select from '@/shared/Select'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import { MapPinIcon } from '@heroicons/react/24/outline'
 import { Map, Marker } from '@vis.gl/react-google-maps'
 import Form from 'next/form'
@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react'
 import FormItem from '../FormItem'
 
 const Page = () => {
+  const { T } = useLanguage()
   const [mapPosition, setMapPosition] = useState({
     lat: 55.9607277,
     lng: 36.2172614,
@@ -35,7 +36,7 @@ const Page = () => {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">{T['addListings']['page2']['pageTitle']}</h1>
+      <h1 className="text-2xl font-semibold">{T.addlisting?.page_title_2 || 'Konum bilgileri'}</h1>
       <Divider className="w-14!" />
 
       {/* FORM */}
@@ -43,11 +44,11 @@ const Page = () => {
         <div>
           <ButtonSecondary>
             <MapPinIcon className="h-5 w-5" />
-            <span>{T['addListings']['page2']['Use current location']}</span>
+            <span>{T.addlisting?.use_current_location || 'Mevcut konumu kullan'}</span>
           </ButtonSecondary>
         </div>
         {/* ITEM */}
-        <FormItem label={T['addListings']['page2']['Country/Region']}>
+        <FormItem label={T.addlisting?.country_region || 'Ülke/Bölge'}>
           <Select name="country-region">
             <option value="United States">United States</option>
             <option value="Viet Nam">Viet Nam</option>
@@ -59,25 +60,25 @@ const Page = () => {
             <option value="...">...</option>
           </Select>
         </FormItem>
-        <FormItem label={T['addListings']['page2']['Street']}>
+        <FormItem label={T.addlisting?.street || 'Cadde/Sokak'}>
           <Input name="Street" placeholder="..." />
         </FormItem>
-        <FormItem label={T['addListings']['page2']['Room number (optional)']}>
+        <FormItem label={T.addlisting?.room_number || 'Daire numarası (opsiyonel)'}>
           <Input name="room-number" type="number" />
         </FormItem>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-5">
-          <FormItem label={T['addListings']['page2']['City']}>
+          <FormItem label={T.addlisting?.city || 'Şehir'}>
             <Input name="city" />
           </FormItem>
-          <FormItem label={T['addListings']['page2']['State']}>
+          <FormItem label={T.addlisting?.state || 'İl/Eyalet'}>
             <Input name="state" />
           </FormItem>
-          <FormItem label={T['addListings']['page2']['Postal code']}>
+          <FormItem label={T.addlisting?.postal_code || 'Posta kodu'}>
             <Input name="Postal" />
           </FormItem>
         </div>
         <div>
-          <p>{T['addListings']['page2']['Detailed address']}</p>
+          <p>{T.addlisting?.detailed_address || 'Detaylı adres'}</p>
           <span className="mt-1 block text-sm text-neutral-500 dark:text-neutral-400">
             1110 Pennsylvania Avenue NW, Washington, DC 20230
           </span>

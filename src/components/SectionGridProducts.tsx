@@ -1,36 +1,59 @@
-import React from 'react';
+'use client'
+
+import React, { useEffect, useState } from 'react';
 import productService, { Product } from '@/services/productService';
 import { getAktifOteller, Otel } from '@/services/otelService';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useLanguage } from '@/hooks/useLanguage';
 
-const SectionGridProducts = async ({ hizmetId }: { hizmetId?: number }) => {
+const SectionGridProducts = ({ hizmetId }: { hizmetId?: number }) => {
+  const { T } = useLanguage();
   const isKonaklama = hizmetId === 1; // hizmetId 1 = konaklama
   
-  let products: Product[] = [];
-  let oteller: Otel[] = [];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [oteller, setOteller] = useState<Otel[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  try {
-    if (isKonaklama) {
-      // Konaklama için otelleri yükle
-      const otelData = await getAktifOteller();
-      oteller = otelData.slice(0, 8); // İlk 8 oteli göster
-    } else {
-      // Diğer hizmetler için ürünleri yükle
-      const data = hizmetId
-        ? await productService.getByHizmet(hizmetId)
-        : await productService.getAll();
-      products = data.slice(0, 8); // İlk 8 ürünü göster
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+        if (isKonaklama) {
+          // Konaklama için otelleri yükle
+          const otelData = await getAktifOteller();
+          setOteller(otelData.slice(0, 8)); // İlk 8 oteli göster
+        } else {
+          // Diğer hizmetler için ürünleri yükle
+          const data = hizmetId
+            ? await productService.getByHizmet(hizmetId)
+            : await productService.getAll();
+          setProducts(data.slice(0, 8)); // İlk 8 ürünü göster
+        }
+      } catch (error: any) {
+        console.error('Veri yüklenemedi:', error);
+      } finally {
+        setLoading(false);
+      }
     }
-  } catch (error: any) {
-    console.error('Veri yüklenemedi:', error);
+    loadData();
+  }, [hizmetId, isKonaklama]);
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-neutral-500 dark:text-neutral-400">
+          {T.common?.loading || 'Yükleniyor...'}
+        </p>
+      </div>
+    );
   }
 
   if (isKonaklama && oteller.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-neutral-500 dark:text-neutral-400">
-          Henüz otel bulunmamaktadır.
+          {T.products?.no_hotels || 'Henüz otel bulunmamaktadır.'}
         </p>
       </div>
     );
@@ -40,7 +63,7 @@ const SectionGridProducts = async ({ hizmetId }: { hizmetId?: number }) => {
     return (
       <div className="text-center py-12">
         <p className="text-neutral-500 dark:text-neutral-400">
-          Henüz ürün bulunmamaktadır.
+          {T.products?.no_products || 'Henüz ürün bulunmamaktadır.'}
         </p>
       </div>
     );
@@ -70,13 +93,13 @@ const SectionGridProducts = async ({ hizmetId }: { hizmetId?: number }) => {
                   />
                 ) : (
                   <div className="w-full h-64 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center">
-                    <span className="text-neutral-400">Resim yok</span>
+                    <span className="text-neutral-400">{T.common?.no_image || 'Resim yok'}</span>
                   </div>
                 )}
                 {otel.durum === 0 && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                     <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                      Pasif
+                      {T.common?.inactive || 'Pasif'}
                     </span>
                   </div>
                 )}
@@ -108,7 +131,7 @@ const SectionGridProducts = async ({ hizmetId }: { hizmetId?: number }) => {
                       ₺{otel.min_fiyat}
                     </span>
                     <span className="text-sm text-neutral-500 dark:text-neutral-400">
-                      / gece
+                      / {T.products?.per_night || 'gece'}
                     </span>
                   </div>
                 )}
@@ -159,13 +182,13 @@ const SectionGridProducts = async ({ hizmetId }: { hizmetId?: number }) => {
               />
             ) : (
               <div className="w-full h-64 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center">
-                <span className="text-neutral-400">Resim yok</span>
+                <span className="text-neutral-400">{T.common?.no_image || 'Resim yok'}</span>
               </div>
             )}
             {product.stok_durumu === 'tukendi' && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                 <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                  Stokta Yok
+                  {T.products?.out_of_stock || 'Stokta Yok'}
                 </span>
               </div>
             )}

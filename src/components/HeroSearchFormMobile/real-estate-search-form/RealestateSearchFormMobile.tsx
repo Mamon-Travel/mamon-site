@@ -1,7 +1,7 @@
 'use client'
 
 import convertNumbThousand from '@/utils/convertNumbThousand'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import * as Headless from '@headlessui/react'
 import Form from 'next/form'
 import { useRouter } from 'next/navigation'
@@ -12,13 +12,16 @@ import PriceRangeInput from './PriceRangeInput'
 import PropertyTypeSelect from './PropertyTypeSelect'
 
 type Tab = 'buy' | 'rent' | 'sell'
-const tabs = [
-  { value: 'buy', label: T['HeroSearchForm']['Buy'] },
-  { value: 'rent', label: T['HeroSearchForm']['Rent'] },
-  { value: 'sell', label: T['HeroSearchForm']['Sell'] },
-] as const
 
 const RealestateSearchFormMobile = () => {
+  const { T } = useLanguage()
+  
+  const tabs = [
+    { value: 'buy' as const, label: T.herosearch?.buy || 'Satın Al' },
+    { value: 'rent' as const, label: T.herosearch?.rent || 'Kirala' },
+    { value: 'sell' as const, label: T.herosearch?.sell || 'Sat' },
+  ]
+  
   //
   const [fieldNameShow, setFieldNameShow] = useState<'location' | 'propertyType' | 'price'>('location')
   //
@@ -42,7 +45,7 @@ const RealestateSearchFormMobile = () => {
     router.push(url)
   }
 
-  let typeStringConverted = selectedTypes.length ? selectedTypes.join(', ') : T['HeroSearchForm']['Add property']
+  let typeStringConverted = selectedTypes.length ? selectedTypes.join(', ') : T.herosearch?.add_property || 'Mülk ekle'
   return (
     <Form id="form-hero-search-form-mobile" action={handleFormSubmit} className="flex w-full flex-col gap-y-3">
       {/* RADIO */}
@@ -69,11 +72,11 @@ const RealestateSearchFormMobile = () => {
       <FieldPanelContainer
         isActive={fieldNameShow === 'location'}
         headingOnClick={() => setFieldNameShow('location')}
-        headingTitle={T['HeroSearchForm']['Where']}
-        headingValue={locationInputTo || T['HeroSearchForm']['Location']}
+        headingTitle={T.herosearch?.where || 'Nerede'}
+        headingValue={locationInputTo || T.herosearch?.location || 'Konum'}
       >
         <LocationInput
-          headingText={T['HeroSearchForm']['Where to find?']}
+          headingText={T.herosearch?.where_to_find || 'Nerede bulmak istersiniz?'}
           defaultValue={locationInputTo}
           onChange={(value) => {
             setLocationInputTo(value)
@@ -86,7 +89,7 @@ const RealestateSearchFormMobile = () => {
       <FieldPanelContainer
         isActive={fieldNameShow === 'propertyType'}
         headingOnClick={() => setFieldNameShow('propertyType')}
-        headingTitle={T['HeroSearchForm']['Property']}
+        headingTitle={T.herosearch?.property || 'Mülk'}
         headingValue={typeStringConverted}
       >
         <PropertyTypeSelect onChange={setSelectedTypes} />
@@ -96,7 +99,7 @@ const RealestateSearchFormMobile = () => {
       <FieldPanelContainer
         isActive={fieldNameShow === 'price'}
         headingOnClick={() => setFieldNameShow('price')}
-        headingTitle={T['HeroSearchForm']['Price']}
+        headingTitle={T.herosearch?.price || 'Fiyat'}
         headingValue={`$${convertNumbThousand(rangePrices[0] / 1000)}k ~ $${convertNumbThousand(rangePrices[1] / 1000)}k`}
       >
         <PriceRangeInput defaultValue={rangePrices} onChange={setRangePrices} />

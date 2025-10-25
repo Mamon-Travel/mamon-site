@@ -1,13 +1,48 @@
 import { API_URL } from './api.config';
 
 export interface TranslationObject {
-  [key: string]: string;
+  [key: string]: any; // nested object veya string olabilir
 }
 
 let translationsCache: { [lang: string]: TranslationObject } = {};
+let flatTranslationsCache: { [lang: string]: { [key: string]: string } } = {};
 let currentLang = 'tr';
 
-// Dil koduna göre tüm çevirileri getir
+// Backend'den gelen düz çevirileri nested objeye çevir
+function convertToNestedObject(flatTranslations: { [key: string]: string }): TranslationObject {
+  const nested: TranslationObject = {};
+
+  Object.entries(flatTranslations).forEach(([key, value]) => {
+    // Eğer key kategori içeriyorsa ayır, yoksa direkt kullan
+    const parts = key.split('.');
+    
+    if (parts.length === 1) {
+      // Kategorisiz anahtar (örn: "submit")
+      nested[key] = value;
+    } else if (parts.length === 2) {
+      // Kategori + anahtar (örn: "common.submit")
+      const [category, actualKey] = parts;
+      if (!nested[category]) {
+        nested[category] = {};
+      }
+      nested[category][actualKey] = value;
+    } else {
+      // Daha derin nested (örn: "Header.AvatarDropDown.Logout")
+      let current = nested;
+      for (let i = 0; i < parts.length - 1; i++) {
+        if (!current[parts[i]]) {
+          current[parts[i]] = {};
+        }
+        current = current[parts[i]];
+      }
+      current[parts[parts.length - 1]] = value;
+    }
+  });
+
+  return nested;
+}
+
+// Dil koduna göre tüm çevirileri getir ve nested yapıya çevir
 export async function loadTranslations(langCode: string = 'tr'): Promise<TranslationObject> {
   // Cache'de varsa direkt döndür
   if (translationsCache[langCode]) {
@@ -15,7 +50,7 @@ export async function loadTranslations(langCode: string = 'tr'): Promise<Transla
   }
 
   try {
-    const response = await fetch(`${API_URL}/ceviriler/dil-kod/${langCode}/object`, {
+    const response = await fetch(`${API_URL}/ceviriler/dil-kod/${langCode}`, {
       cache: 'no-store',
     });
     
@@ -24,9 +59,24 @@ export async function loadTranslations(langCode: string = 'tr'): Promise<Transla
       return {};
     }
 
-    const translations = await response.json();
-    translationsCache[langCode] = translations;
-    return translations;
+    const ceviriler = await response.json();
+    
+    // Backend'den gelen array'i düz objeye çevir
+    const flatTranslations: { [key: string]: string } = {};
+    ceviriler.forEach((ceviri: any) => {
+      // Kategori varsa kategori.anahtar, yoksa sadece anahtar
+      const fullKey = ceviri.kategori ? `${ceviri.kategori}.${ceviri.anahtar}` : ceviri.anahtar;
+      flatTranslations[fullKey] = ceviri.deger;
+    });
+
+    // Düz objeyi cache'e kaydet
+    flatTranslationsCache[langCode] = flatTranslations;
+    
+    // Nested yapıya çevir
+    const nestedTranslations = convertToNestedObject(flatTranslations);
+    translationsCache[langCode] = nestedTranslations;
+    
+    return nestedTranslations;
   } catch (error) {
     console.error(`Çeviri fetch error (${langCode}):`, error);
     return {};
@@ -78,4 +128,8 @@ export function initializeTranslations(langCode: string = 'tr') {
   setLanguage(langCode);
   return loadTranslations(langCode);
 }
+
+
+
+
 

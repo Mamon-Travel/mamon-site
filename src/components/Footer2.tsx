@@ -1,47 +1,20 @@
+'use client'
+
 import Logo from '@/shared/Logo'
-
 import type { JSX } from 'react'
+import { useEffect, useState } from 'react'
+import footerService, { FooterData } from '@/services/footerService'
 
-const navigation: {
-  solutions: { name: string; href: string }[]
-  support: { name: string; href: string }[]
-  company: { name: string; href: string }[]
-  legal: { name: string; href: string }[]
-  social: {
-    name: string
-    href: string
-    icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element
-  }[]
-} = {
-  solutions: [
-    { name: 'Marketing', href: '#' },
-    { name: 'Analytics', href: '#' },
-    { name: 'Automation', href: '#' },
-    { name: 'Commerce', href: '#' },
-  ],
-  support: [
-    { name: 'Submit ticket', href: '#' },
-    { name: 'Documentation', href: '#' },
-    { name: 'Guides', href: '#' },
-  ],
-  company: [
-    { name: 'About', href: '#' },
-    { name: 'Blog', href: '#' },
-    { name: 'Jobs', href: '#' },
-    { name: 'Press', href: '#' },
-  ],
-  legal: [
-    { name: 'Terms of service', href: '#' },
-    { name: 'Privacy policy', href: '#' },
-    { name: 'License', href: '#' },
-    { name: 'Insights', href: '#' },
-  ],
-  social: [
-    {
-      name: 'Facebook',
-      href: '#',
-      icon: (props) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
+const socialIcons: {
+  name: string
+  key: keyof FooterData['ayarlar']
+  icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element
+}[] = [
+  {
+    name: 'Facebook',
+    key: 'facebook_url' as const,
+    icon: (props) => (
+      <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
             fillRule="evenodd"
             d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
@@ -49,11 +22,11 @@ const navigation: {
           />
         </svg>
       ),
-    },
-    {
-      name: 'Instagram',
-      href: '#',
-      icon: (props) => (
+  },
+  {
+    name: 'Instagram',
+    key: 'instagram_url' as const,
+    icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
             fillRule="evenodd"
@@ -62,20 +35,20 @@ const navigation: {
           />
         </svg>
       ),
-    },
-    {
-      name: 'X',
-      href: '#',
-      icon: (props) => (
+  },
+  {
+    name: 'X',
+    key: 'twitter_url' as const,
+    icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218H13.6823ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z" />
         </svg>
       ),
-    },
-    {
-      name: 'GitHub',
-      href: '#',
-      icon: (props) => (
+  },
+  {
+    name: 'GitHub',
+    key: 'github_url' as const,
+    icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
             fillRule="evenodd"
@@ -84,11 +57,11 @@ const navigation: {
           />
         </svg>
       ),
-    },
-    {
-      name: 'YouTube',
-      href: '#',
-      icon: (props) => (
+  },
+  {
+    name: 'YouTube',
+    key: 'youtube_url' as const,
+    icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
             fillRule="evenodd"
@@ -97,11 +70,25 @@ const navigation: {
           />
         </svg>
       ),
-    },
-  ],
-}
+  },
+]
 
 export default function Footer2() {
+  const [footerData, setFooterData] = useState<FooterData | null>(null)
+
+  useEffect(() => {
+    async function loadFooterData() {
+      const data = await footerService.getFooterData()
+      setFooterData(data)
+    }
+    loadFooterData()
+  }, [])
+
+  if (!footerData) {
+    return <div className="py-8 text-center">Yükleniyor...</div>
+  }
+
+  const { menuler: navigation, ayarlar } = footerData
   return (
     <footer className="border-t border-neutral-200 dark:border-neutral-700">
       <div className="container pt-16 pb-8 sm:pt-24 lg:pt-32">
@@ -109,11 +96,11 @@ export default function Footer2() {
           <div className="space-y-8">
             <Logo className="w-20" />
             <p className="text-sm/6 text-balance text-gray-600 dark:text-neutral-400">
-              Making the world a better place through constructing elegant hierarchies.
+              {ayarlar.about_text}
             </p>
             <div className="flex gap-x-6">
-              {navigation.social.map((item) => (
-                <a key={item.name} href={item.href} className="text-gray-600 hover:text-gray-800 dark:text-neutral-400">
+              {socialIcons.map((item) => (
+                <a key={item.name} href={ayarlar[item.key] || '#'} className="text-gray-600 hover:text-gray-800 dark:text-neutral-400">
                   <span className="sr-only">{item.name}</span>
                   <item.icon aria-hidden="true" className="size-6" />
                 </a>
@@ -177,7 +164,7 @@ export default function Footer2() {
         </div>
         <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24 dark:border-gray-700">
           <p className="text-sm/6 text-gray-600 dark:text-neutral-400">
-            &copy; 2025 Your Company, Inc. All rights reserved.
+            {ayarlar.copyright}
           </p>
         </div>
       </div>

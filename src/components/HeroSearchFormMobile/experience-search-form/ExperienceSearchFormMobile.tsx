@@ -2,7 +2,7 @@
 
 import { GuestsObject } from '@/type'
 import converSelectedDateToString from '@/utils/converSelectedDateToString'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import Form from 'next/form'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -12,6 +12,7 @@ import GuestsInput from '../GuestsInput'
 import LocationInput from '../LocationInput'
 
 const ExperienceSearchFormMobile = () => {
+  const { T } = useLanguage()
   //
   const [fieldNameShow, setFieldNameShow] = useState<'location' | 'dates' | 'guests'>('location')
   //
@@ -47,16 +48,16 @@ const ExperienceSearchFormMobile = () => {
   //
   const totalGuests = (guestInput.guestAdults || 0) + (guestInput.guestChildren || 0) + (guestInput.guestInfants || 0)
   const guestStringConverted = totalGuests
-    ? `${totalGuests} ${T['HeroSearchForm']['Guests']}`
-    : T['HeroSearchForm']['Add guests']
+    ? `${totalGuests} ${T.herosearch?.guests || 'Misafirler'}`
+    : T.herosearch?.add_guests || 'Misafir ekle'
   return (
     <Form id="form-hero-search-form-mobile" action={handleFormSubmit} className="flex w-full flex-col gap-y-3">
       {/*  LOCATION */}
       <FieldPanelContainer
         isActive={fieldNameShow === 'location'}
         headingOnClick={() => setFieldNameShow('location')}
-        headingTitle={T['HeroSearchForm']['Where']}
-        headingValue={locationInputTo || T['HeroSearchForm']['Location']}
+        headingTitle={T.herosearch?.where || 'Nerede'}
+        headingValue={locationInputTo || T.herosearch?.location || 'Konum'}
       >
         <LocationInput
           defaultValue={locationInputTo}
@@ -71,8 +72,8 @@ const ExperienceSearchFormMobile = () => {
       <FieldPanelContainer
         isActive={fieldNameShow === 'dates'}
         headingOnClick={() => setFieldNameShow('dates')}
-        headingTitle={T['HeroSearchForm']['When']}
-        headingValue={startDate ? converSelectedDateToString([startDate, endDate]) : T['HeroSearchForm']['Add dates']}
+        headingTitle={T.herosearch?.when || 'Ne zaman'}
+        headingValue={startDate ? converSelectedDateToString([startDate, endDate]) : T.herosearch?.add_dates || 'Tarih ekle'}
       >
         <DatesRangeInput defaultStartDate={startDate} defaultEndDate={endDate} onChange={onChangeDate} />
       </FieldPanelContainer>
@@ -81,7 +82,7 @@ const ExperienceSearchFormMobile = () => {
       <FieldPanelContainer
         isActive={fieldNameShow === 'guests'}
         headingOnClick={() => setFieldNameShow('guests')}
-        headingTitle={T['HeroSearchForm']['Who']}
+        headingTitle={T.herosearch?.who || 'Kimler'}
         headingValue={guestStringConverted}
       >
         <GuestsInput defaultValue={guestInput} onChange={setGuestInput} />

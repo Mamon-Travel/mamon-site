@@ -2,7 +2,7 @@
 
 import { GuestsObject } from '@/type'
 import converSelectedDateToString from '@/utils/converSelectedDateToString'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import * as Headless from '@headlessui/react'
 import Form from 'next/form'
 import { useRouter } from 'next/navigation'
@@ -12,10 +12,19 @@ import FieldPanelContainer from '../FieldPanelContainer'
 import GuestsInput from '../GuestsInput'
 import LocationInput from '../LocationInput'
 
-const dropOffLocationTypes = ['Round-trip', 'One-way'] as const
-const flightClasses = ['Economy', 'Business', 'Multiple'] as const
-
 const FlightSearchFormMobile = () => {
+  const { T } = useLanguage()
+  
+  const dropOffLocationTypes = [
+    { value: 'Round-trip', label: T.herosearch?.round_trip || 'Gidiş-Dönüş' },
+    { value: 'One-way', label: T.herosearch?.one_way || 'Tek Yön' },
+  ] as const
+  
+  const flightClasses = [
+    { value: 'Economy', label: T.herosearch?.economy || 'Ekonomi' },
+    { value: 'Business', label: T.herosearch?.business || 'Business' },
+    { value: 'Multiple', label: T.herosearch?.multiple || 'Çoklu' },
+  ] as const
   //
   const [fieldNameShow, setFieldNameShow] = useState<
     'locationPickup' | 'locationDropoff' | 'dates' | 'guests' | 'general'
@@ -26,8 +35,8 @@ const FlightSearchFormMobile = () => {
   const [startDate, setStartDate] = useState<Date | null>(new Date('2023/02/06'))
   const [endDate, setEndDate] = useState<Date | null>(new Date('2023/02/23'))
 
-  const [dropOffLocationType, setDropOffLocationType] = useState(dropOffLocationTypes[0])
-  const [flightClassState, setFlightClassState] = useState(flightClasses[0])
+  const [dropOffLocationType, setDropOffLocationType] = useState(dropOffLocationTypes[0].value)
+  const [flightClassState, setFlightClassState] = useState(flightClasses[0].value)
 
   const [guestInput, setGuestInput] = useState<GuestsObject>({
     guestAdults: 0,
@@ -61,11 +70,11 @@ const FlightSearchFormMobile = () => {
       <FieldPanelContainer
         isActive={fieldNameShow === 'locationPickup'}
         headingOnClick={() => setFieldNameShow('locationPickup')}
-        headingTitle={T['HeroSearchForm']['Pick up']}
-        headingValue={locationInputPickUp || T['HeroSearchForm']['Location']}
+        headingTitle={T.herosearch?.pickup || 'Kalkış'}
+        headingValue={locationInputPickUp || T.herosearch?.location || 'Konum'}
       >
         <LocationInput
-          headingText={T['HeroSearchForm']['Pick up'] + '?'}
+          headingText={(T.herosearch?.pickup || 'Kalkış') + '?'}
           imputName="locationPickup"
           defaultValue={locationInputPickUp}
           onChange={(value) => {
@@ -82,11 +91,11 @@ const FlightSearchFormMobile = () => {
       <FieldPanelContainer
         isActive={fieldNameShow === 'locationDropoff'}
         headingOnClick={() => setFieldNameShow('locationDropoff')}
-        headingTitle={T['HeroSearchForm']['Drop off']}
-        headingValue={locationInputDropOff || T['HeroSearchForm']['Location']}
+        headingTitle={T.herosearch?.dropoff || 'Varış'}
+        headingValue={locationInputDropOff || T.herosearch?.location || 'Konum'}
       >
         <LocationInput
-          headingText={T['HeroSearchForm']['Drop off'] + '?'}
+          headingText={(T.herosearch?.dropoff || 'Varış') + '?'}
           imputName="locationDropOff"
           defaultValue={locationInputDropOff}
           onChange={(value) => {
@@ -103,8 +112,8 @@ const FlightSearchFormMobile = () => {
       <FieldPanelContainer
         isActive={fieldNameShow === 'dates'}
         headingOnClick={() => setFieldNameShow('dates')}
-        headingTitle={T['HeroSearchForm']['When']}
-        headingValue={startDate ? converSelectedDateToString([startDate, endDate]) : T['HeroSearchForm']['Add dates']}
+        headingTitle={T.herosearch?.when || 'Ne zaman'}
+        headingValue={startDate ? converSelectedDateToString([startDate, endDate]) : T.herosearch?.add_dates || 'Tarih ekle'}
       >
         <DatesRangeInput onChange={onChangeDate} />
       </FieldPanelContainer>
@@ -112,14 +121,17 @@ const FlightSearchFormMobile = () => {
   }
 
   const renderGenerals = () => {
+    const currentDropOffLabel = dropOffLocationTypes.find(t => t.value === dropOffLocationType)?.label || dropOffLocationType
+    const currentFlightLabel = flightClasses.find(t => t.value === flightClassState)?.label || flightClassState
+    
     return (
       <FieldPanelContainer
         isActive={fieldNameShow === 'general'}
         headingOnClick={() => setFieldNameShow('general')}
-        headingTitle={T['HeroSearchForm']['Flight type?']}
-        headingValue={`${dropOffLocationType}, ${flightClassState}`}
+        headingTitle={T.herosearch?.flight_type || 'Uçuş tipi?'}
+        headingValue={`${currentDropOffLabel}, ${currentFlightLabel}`}
       >
-        <p className="block text-xl font-semibold sm:text-2xl">{T['HeroSearchForm']['Flight type?']}</p>
+        <p className="block text-xl font-semibold sm:text-2xl">{T.herosearch?.flight_type || 'Uçuş tipi?'}</p>
         <div className="relative mt-5">
           <Headless.RadioGroup
             value={dropOffLocationType}
@@ -129,19 +141,19 @@ const FlightSearchFormMobile = () => {
             className="flex flex-wrap items-center gap-2.5"
           >
             {dropOffLocationTypes.map((tab) => (
-              <Headless.Field key={tab}>
+              <Headless.Field key={tab.value}>
                 <Headless.Radio
-                  value={tab}
+                  value={tab.value}
                   className={`flex cursor-pointer items-center rounded-full border border-neutral-300 px-4 py-1.5 text-xs font-medium data-checked:bg-black data-checked:text-white data-checked:shadow-lg data-checked:shadow-black/10 dark:border-neutral-700 dark:data-checked:bg-neutral-200 dark:data-checked:text-neutral-900`}
                 >
-                  {tab}
+                  {tab.label}
                 </Headless.Radio>
               </Headless.Field>
             ))}
           </Headless.RadioGroup>
 
           <div className="mt-6">
-            <p className="text-base font-semibold">{T['HeroSearchForm']['Ticket Class']}</p>
+            <p className="text-base font-semibold">{T.herosearch?.ticket_class || 'Bilet Sınıfı'}</p>
             <Headless.RadioGroup
               value={flightClassState}
               onChange={setFlightClassState}
@@ -150,12 +162,12 @@ const FlightSearchFormMobile = () => {
               className="mt-4 flex flex-wrap items-center gap-2.5"
             >
               {flightClasses.map((tab) => (
-                <Headless.Field key={tab}>
+                <Headless.Field key={tab.value}>
                   <Headless.Radio
-                    value={tab}
+                    value={tab.value}
                     className={`flex cursor-pointer items-center rounded-full border border-neutral-300 px-4 py-1.5 text-xs font-medium data-checked:bg-black data-checked:text-white data-checked:shadow-lg data-checked:shadow-black/10 dark:border-neutral-700 dark:data-checked:bg-neutral-200 dark:data-checked:text-neutral-900`}
                   >
-                    {tab}
+                    {tab.label}
                   </Headless.Radio>
                 </Headless.Field>
               ))}
@@ -170,14 +182,14 @@ const FlightSearchFormMobile = () => {
     const isActive = fieldNameShow === 'guests'
     const totalGuests = (guestInput.guestAdults || 0) + (guestInput.guestChildren || 0) + (guestInput.guestInfants || 0)
     const guestStringConverted = totalGuests
-      ? `${totalGuests} ${T['HeroSearchForm']['Guests']}`
-      : T['HeroSearchForm']['Add guests']
+      ? `${totalGuests} ${T.herosearch?.guests || 'Misafirler'}`
+      : T.herosearch?.add_guests || 'Misafir ekle'
 
     return (
       <FieldPanelContainer
         isActive={isActive}
         headingOnClick={() => setFieldNameShow('guests')}
-        headingTitle={T['HeroSearchForm']['Who']}
+        headingTitle={T.herosearch?.who || 'Kimler'}
         headingValue={guestStringConverted}
       >
         <GuestsInput defaultValue={guestInput} onChange={setGuestInput} />

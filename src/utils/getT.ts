@@ -1,26 +1,59 @@
-import { en } from '../../public/locales/en'
-import { tr } from '../../public/locales/tr'
+import { loadTranslations, TranslationObject } from '@/services/ceviriService'
 
-// Dinamik çeviri fonksiyonu
-export const getTranslations = (lang?: 'tr' | 'en') => {
-  // Server-side veya ilk render için parametre olarak verilen dili kullan
-  // Client-side'da parametre yoksa localStorage'dan oku
-  if (lang) {
-    return lang === 'en' ? en : tr
-  }
-  
-  // Client-side ve parametre yoksa
-  if (typeof window !== 'undefined') {
-    const savedLanguage = (localStorage.getItem('language') as 'tr' | 'en') || 'tr'
-    return savedLanguage === 'en' ? en : tr
-  }
-  
-  // Server-side ve parametre yoksa: varsayılan Türkçe
-  return tr
+// Backend'den yüklenen çeviriler için cache
+let dynamicTranslations: { [lang: string]: TranslationObject } = {}
+let isLoading = false
+
+// Proxy handler - undefined erişimlerinde boş string döndür
+const createSafeProxy = (obj: any = {}): any => {
+  return new Proxy(obj, {
+    get(target, prop) {
+      // Symbol ve özel metodları bypass et
+      if (typeof prop === 'symbol' || prop === 'toJSON' || prop === 'toString' || prop === 'valueOf') {
+        return target[prop]
+      }
+      
+      if (prop in target) {
+        const value = target[prop]
+        // Eğer değer obje ise (ama null, function, array değilse), onu da proxy'le
+        if (typeof value === 'object' && value !== null && !Array.isArray(value) && !(value instanceof Date)) {
+          return createSafeProxy(value)
+        }
+        return value
+      }
+      // Yoksa boş string döndür
+      return ''
+    }
+  })
 }
 
-// Varsayılan export - her zaman Türkçe (hydration uyumlu)
-// Client component'lerde useLanguage() hook'unu kullanın
-const T = tr
+// Dinamik çeviri fonksiyonu - Sadece backend'den yükler
+export const getTranslations = (lang?: 'tr' | 'en') => {
+  const selectedLang = lang || 'tr'
+  
+  // Eğer dinamik çeviriler yüklenmişse onları kullan
+  if (dynamicTranslations[selectedLang]) {
+    return createSafeProxy(dynamicTranslations[selectedLang])
+  }
+  
+  // Client-side'daysa backend'den yüklemeyi başlat
+  if (typeof window !== 'undefined' && !isLoading) {
+    isLoading = true
+    loadTranslations(selectedLang).then((translations) => {
+      dynamicTranslations[selectedLang] = translations
+      isLoading = false
+      console.log(`✅ Çeviriler backend'den yüklendi (${selectedLang}):`, Object.keys(translations).length, 'kategori')
+    }).catch((error) => {
+      isLoading = false
+      console.error(`❌ Backend'den çeviriler yüklenemedi (${selectedLang}):`, error)
+    })
+  }
+  
+  // Güvenli boş proxy döndür (backend yüklenene kadar)
+  return createSafeProxy({})
+}
+
+// Varsayılan export - güvenli boş proxy
+const T = createSafeProxy({})
 
 export default T

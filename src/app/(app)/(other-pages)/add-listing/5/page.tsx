@@ -5,13 +5,14 @@ import { Divider } from '@/shared/divider'
 import { Fieldset, Label, Legend } from '@/shared/fieldset'
 import Input from '@/shared/Input'
 import { Radio, RadioField, RadioGroup } from '@/shared/radio'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import { PlusIcon, XMarkIcon } from '@heroicons/react/24/solid'
 import Form from 'next/form'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 const Page = () => {
+  const { T } = useLanguage()
   const router = useRouter()
 
   // Prefetch the next step to improve performance
@@ -43,9 +44,9 @@ const Page = () => {
   return (
     <>
       <div>
-        <h2 className="text-2xl font-semibold">{T['addListings']['page5']['pageTitle']}</h2>
+        <h2 className="text-2xl font-semibold">{T.addlisting?.page_title_5 || 'Kurallar'}</h2>
         <span className="mt-2 block text-neutral-500 dark:text-neutral-400">
-          {T['addListings']['page5']['pageDescription']}
+          {T.addlisting?.page_desc_5 || 'Mülkünüzün kurallarını belirleyin'}
         </span>
       </div>
 
@@ -133,19 +134,19 @@ const Page = () => {
 
       <Divider />
 
-      <p className="block text-lg font-semibold">{T['addListings']['page5']['Additional rules']}</p>
+      <p className="block text-lg font-semibold">{T.addlisting?.additional_rules || 'Ek kurallar'}</p>
       <div className="flow-root">
         <div className="-my-3 divide-y divide-neutral-100 dark:divide-neutral-800">
-          {renderNoInclude('No smoking in common areas')}
-          {renderNoInclude('Do not wear shoes/shoes in the house')}
-          {renderNoInclude('No cooking in the bedroom')}
+          {renderNoInclude(T.addlisting?.no_smoking_common || 'Ortak alanlarda sigara içilmez')}
+          {renderNoInclude(T.addlisting?.no_shoes_inside || 'Evde ayakkabı giyilmez')}
+          {renderNoInclude(T.addlisting?.no_cooking_bedroom || 'Yatak odasında yemek pişirilmez')}
         </div>
       </div>
       <div className="flex flex-col gap-x-5 gap-y-3 sm:flex-row sm:justify-between">
-        <Input placeholder={T['addListings']['page5']['No smoking']} />
+        <Input placeholder={T.addlisting?.rule_placeholder || 'Sigara içilmez'} />
         <ButtonPrimary>
           <PlusIcon className="h-5 w-5" />
-          <span>{T['addListings']['page5']['Add tag']}</span>
+          <span>{T.addlisting?.add_rule || 'Kural ekle'}</span>
         </ButtonPrimary>
       </div>
     </>

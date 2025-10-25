@@ -3,7 +3,7 @@
 import { Checkbox, CheckboxField, CheckboxGroup } from '@/shared/Checkbox'
 import { Divider } from '@/shared/divider'
 import { Fieldset, Label } from '@/shared/fieldset'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import Form from 'next/form'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -135,6 +135,7 @@ const safeAmenities = [
 ]
 
 const Page = () => {
+  const { T } = useLanguage()
   const router = useRouter()
 
   // Prefetch the next step to improve performance
@@ -154,9 +155,9 @@ const Page = () => {
   return (
     <>
       <div>
-        <h1 className="text-2xl font-semibold">{[T['addListings']['page4']['pageTitle']]}</h1>
+        <h1 className="text-2xl font-semibold">{T.addlisting?.page_title_4 || 'Özellikler'}</h1>
         <p className="mt-2 block text-neutral-500 dark:text-neutral-400">
-          {[T['addListings']['page4']['pageDescription']]}
+          {T.addlisting?.page_desc_4 || 'Mülkünüzün özelliklerini seçin'}
         </p>
       </div>
       <Divider className="w-14!" />
@@ -164,7 +165,7 @@ const Page = () => {
       {/* FORM */}
       <Form id="add-listing-form" action={handleSubmitForm} className="flex flex-col gap-y-12">
         <div>
-          <p className="text-lg font-semibold">{[T['addListings']['page4']['General amenities']]}</p>
+          <p className="text-lg font-semibold">{T.addlisting?.general_amenities || 'Genel Özellikler'}</p>
           <Fieldset className="mt-6">
             <CheckboxGroup className="grid grid-cols-1 gap-4 space-y-0! sm:grid-cols-2 sm:gap-y-6 lg:grid-cols-3">
               {generalAmenities.map((amenity) => (
@@ -178,7 +179,7 @@ const Page = () => {
         </div>
 
         <div>
-          <p className="text-lg font-semibold">{[T['addListings']['page4']['Other amenities']]}</p>
+          <p className="text-lg font-semibold">{T.addlisting?.other_amenities || 'Diğer Özellikler'}</p>
           <Fieldset className="mt-6">
             <CheckboxGroup className="grid grid-cols-1 gap-4 space-y-0! sm:grid-cols-2 sm:gap-y-6 lg:grid-cols-3">
               {otherAmenities.map((amenity) => (
@@ -192,7 +193,7 @@ const Page = () => {
         </div>
 
         <div>
-          <p className="text-lg font-semibold">{[T['addListings']['page4']['Safe amenities']]}</p>
+          <p className="text-lg font-semibold">{T.addlisting?.safe_amenities || 'Güvenlik Özellikleri'}</p>
           <Fieldset className="mt-6">
             <CheckboxGroup className="grid grid-cols-1 gap-4 space-y-0! sm:grid-cols-2 sm:gap-y-6 lg:grid-cols-3">
               {safeAmenities.map((amenity) => (

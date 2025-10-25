@@ -1,12 +1,13 @@
 'use client'
 
 import Textarea from '@/shared/Textarea'
-import T from '@/utils/getT'
+import { useLanguage } from '@/hooks/useLanguage'
 import Form from 'next/form'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 const PageAddListing6 = () => {
+  const { T } = useLanguage()
   const router = useRouter()
 
   // Prefetch the next step to improve performance
@@ -26,9 +27,9 @@ const PageAddListing6 = () => {
   return (
     <>
       <div>
-        <h2 className="text-2xl font-semibold">{T['addListings']['page6']['pageTitle']}</h2>
+        <h2 className="text-2xl font-semibold">{T.addlisting?.page_title_6 || 'Açıklama'}</h2>
         <span className="mt-2 block text-neutral-500 dark:text-neutral-400">
-          {T['addListings']['page6']['pageDescription']}
+          {T.addlisting?.page_desc_6 || 'Mülkünüzü tanıtın'}
         </span>
       </div>
 
